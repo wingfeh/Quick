@@ -1,0 +1,119 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "PlatformIO: Build",
+			"type": "shell",
+			"command": "pio",
+			"args": [
+				"run"
+			],
+			"group": "build",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "PlatformIO: Upload",
+			"type": "shell",
+			"command": "pio",
+			"args": [
+				"run",
+				"--target",
+				"upload"
+			],
+			"group": "build",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "PlatformIO: Clean",
+			"type": "shell",
+			"command": "pio",
+			"args": [
+				"run",
+				"--target",
+				"clean"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"isBackground": false
+		},
+		{
+			"label": "PlatformIO: Monitor",
+			"type": "shell",
+			"command": "pio",
+			"args": [
+				"device",
+				"monitor"
+			],
+			"group": "test",
+			"isBackground": true,
+			"problemMatcher": [],
+			"runOptions": {
+				"instanceLimit": 1
+			}
+		},
+		{
+			"label": "Arduino Mega: Upload Firmware",
+			"type": "shell",
+			"command": "pio",
+			"args": [
+				"run",
+				"--target",
+				"upload"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/arduino-mega-ethernet"
+			},
+			"group": "build",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "ROS2: Build Package",
+			"type": "shell",
+			"command": "colcon",
+			"args": [
+				"build",
+				"--packages-select",
+				"mega1_control"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/ros2_ws"
+			},
+			"group": "build",
+			"problemMatcher": [],
+			"isBackground": false
+		},
+		{
+			"label": "ROS2: Launch System",
+			"type": "shell",
+			"command": "bash",
+			"args": [
+				"-c",
+				"source /opt/ros/jazzy/setup.bash && source install/setup.bash && ros2 launch mega1_control mega1_system.launch.py"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}/ros2_ws"
+			},
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": true
+		},
+		{
+			"label": "System: Status Check",
+			"type": "shell",
+			"command": "${workspaceFolder}/system_status.sh",
+			"args": [],
+			"group": "test",
+			"problemMatcher": [],
+			"isBackground": false
+		}
+	]
+}
