@@ -6,24 +6,24 @@ from std_msgs.msg import String, Bool
 import socket
 import time
 
-class Mega1SensorNode(Node):
+class Mega5SensorNode(Node):
     def __init__(self):
-        super().__init__('m1sensor_node')
+        super().__init__('m5sensor_node')
         
         # Publishers (matching GUI expectations)
-        self.response_publisher = self.create_publisher(String, 'mega1/sensor_response', 10)
-        self.state_publisher = self.create_publisher(Bool, 'mega1/sensor_state', 10)
+        self.response_publisher = self.create_publisher(String, 'mega5/sensor_response', 10)
+        self.state_publisher = self.create_publisher(Bool, 'mega5/sensor_state', 10)
         
         # Subscriber for sensor commands
         self.command_subscription = self.create_subscription(
             String,
-            'mega1/sensor_command',
+            'mega5/sensor_command',
             self.command_callback,
             10
         )
         
         # Arduino connection settings
-        self.arduino_ip = '192.168.100.101'
+        self.arduino_ip = '192.168.100.105'
         self.arduino_port = 8888
         
         # UDP socket
@@ -37,7 +37,7 @@ class Mega1SensorNode(Node):
         # Timer for periodic sensor readings (high frequency)
         self.sensor_timer = self.create_timer(0.02, self.read_sensor)  # 50Hz
         
-        self.get_logger().info('Mega1 Sensor node started. Polling at 50Hz.')
+        self.get_logger().info('Mega5 Sensor node started. Polling at 50Hz.')
     
     def send_udp_command(self, command):
         """Send UDP command to Arduino and return response"""
@@ -53,56 +53,56 @@ class Mega1SensorNode(Node):
         except Exception as e:
             self.get_logger().error(f'Error sending command {command}: {e}')
             return None
-    
+
     def command_callback(self, msg):
         """Handle incoming sensor commands"""
-        command = msg.data.upper()
-        self.get_logger().info(f'Received sensor command: {command}')
-        
-        if command == 'READ':
+        command = msg.data
+        if command == "READ":
             self.read_sensor()
         else:
-            self.get_logger().warning(f'Unknown sensor command: {command}')
-    
+            self.get_logger().warn(f'Unknown sensor command: {command}')
+
     def read_sensor(self):
-        """Read sensor value from Arduino"""
-        response = self.send_udp_command('SENSOR')
+        """Read sensor state and publish"""
+        response = self.send_udp_command("SENSOR")
+        
         if response:
-            self.publish_response(response)
-            # Parse state from sensor response
-            if 'HIGH' in response:
-                self.publish_state(True)
-            elif 'LOW' in response:
-                self.publish_state(False)
-    
-    def publish_response(self, response_text):
-        """Publish sensor response message"""
-        if response_text != self.last_response:
-            msg = String()
-            msg.data = response_text
-            self.response_publisher.publish(msg)
-            self.last_response = response_text
-            self.get_logger().debug(f'Published sensor response: {response_text}')
-    
-    def publish_state(self, state):
-        """Publish boolean sensor state"""
-        if state != self.last_state:
-            msg = Bool()
-            msg.data = state
-            self.state_publisher.publish(msg)
-            self.last_state = state
-            self.get_logger().debug(f'Published sensor state: {state}')
+            self.last_response = response
+            
+            # Parse sensor state 
+            if "HIGH" in response:
+                sensor_state = True
+            elif "LOW" in response:
+                sensor_state = False
+            else:
+                sensor_state = self.last_state  # Keep previous state if unclear
+            
+            # Only publish if state changed or first reading
+            if sensor_state != self.last_state or self.last_state is None:
+                self.last_state = sensor_state
+                
+                # Publish response string
+                response_msg = String()
+                response_msg.data = response
+                self.response_publisher.publish(response_msg)
+                
+                # Publish boolean state
+                state_msg = Bool()
+                state_msg.data = sensor_state
+                self.state_publisher.publish(state_msg)
+                
+                self.get_logger().debug(f'Sensor response: {response}, State: {sensor_state}')
 
 def main(args=None):
     rclpy.init(args=args)
-    sensor_node = Mega1SensorNode()
+    node = Mega5SensorNode()
     
     try:
-        rclpy.spin(sensor_node)
+        rclpy.spin(node)
     except KeyboardInterrupt:
         pass
     finally:
-        sensor_node.destroy_node()
+        node.destroy_node()
         rclpy.shutdown()
 
 if __name__ == '__main__':

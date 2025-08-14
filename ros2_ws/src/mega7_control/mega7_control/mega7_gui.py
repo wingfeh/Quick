@@ -1,17 +1,18 @@
+#!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Bool, String
 import tkinter as tk
 
-class Mega2GUI(Node):
+class Mega7GUI(Node):
     def __init__(self):
-        super().__init__('mega2_gui_node')
-        self.relay_publisher = self.create_publisher(String, 'mega2/relay_command', 10)
-        self.relay_status_subscriber = self.create_subscription(String, 'mega2/relay_status', self.update_relay_status, 10)
-        self.sensor_status_subscriber = self.create_subscription(String, 'mega2/sensor_response', self.update_sensor_status, 10)
+        super().__init__('mega7_gui_node')
+        self.relay_publisher = self.create_publisher(Bool, 'mega7/relay_command', 10)
+        self.relay_status_subscriber = self.create_subscription(Bool, 'mega7/relay_status', self.update_relay_status, 10)
+        self.sensor_status_subscriber = self.create_subscription(String, 'mega7/sensor_response', self.update_sensor_status, 10)
 
         self.root = tk.Tk()
-        self.root.title("Mega2 Control Panel")
+        self.root.title("Mega7 Control Panel")
         self.root.geometry("300x200")
 
         self.relay_status_label = tk.Label(self.root, text="Relay Status: Unknown", font=("Helvetica", 12))
@@ -33,30 +34,38 @@ class Mega2GUI(Node):
         self.root.after(100, self.spin_ros)
 
     def turn_on(self):
-        msg = String()
-        msg.data = 'ON'
+        msg = Bool()
+        msg.data = True
         self.relay_publisher.publish(msg)
 
     def turn_off(self):
-        msg = String()
-        msg.data = 'OFF'
+        msg = Bool()
+        msg.data = False
         self.relay_publisher.publish(msg)
 
     def update_relay_status(self, msg):
-        self.relay_status_label.config(text=f"Relay Status: {msg.data}")
+        status_text = "ON" if msg.data else "OFF"
+        self.relay_status_label.config(text=f"Relay Status: {status_text}")
 
     def update_sensor_status(self, msg):
-        self.sensor_status_label.config(text=f"Sensor Status: {msg.data}")
+        status_text = "HIGH" if msg.data else "LOW"
+        self.sensor_status_label.config(text=f"Sensor Status: {status_text}")
 
-    def start(self):
+    def run(self):
         self.root.mainloop()
-        self.destroy_node()
-        rclpy.shutdown()
 
 def main(args=None):
     rclpy.init(args=args)
-    gui_node = Mega2GUI()
-    gui_node.start()
+    
+    gui = Mega7GUI()
+    
+    try:
+        gui.run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        gui.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

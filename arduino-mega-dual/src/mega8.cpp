@@ -3,15 +3,15 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 
-// PERFORMANCE OPTIMIZED FIRMWARE - MEGA1
-// File: mega1.cpp
-// IP: 192.168.100.101
-// MAC: 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0x01
+// PERFORMANCE OPTIMIZED FIRMWARE - MEGA8
+// File: mega8.cpp
+// IP: 192.168.100.108
+// MAC: 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0x08
 // Minimal overhead, maximum speed
 
-// Network configuration - MEGA1
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0x01};
-IPAddress ip(192, 168, 100, 101);
+// Network configuration - MEGA8
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0x08};
+IPAddress ip(192, 168, 100, 108);
 
 // UDP configuration
 unsigned int localPort = 8888;
@@ -55,7 +55,7 @@ void setup() {
   
   // Serial debugging enabled
   Serial.begin(115200);
-  Serial.println("OPTIMIZED RELAY & SENSOR CONTROLLER MEGA1 READY");
+  Serial.println("OPTIMIZED RELAY & SENSOR CONTROLLER MEGA8 READY");
   Serial.print("IP: ");
   Serial.println(ip);
 }

@@ -19,11 +19,11 @@ char packetBuffer[16];  // Minimal buffer size
 EthernetUDP Udp;
 
 // Relay configuration
-const int RELAY_PIN = 4;
+const int RELAY_PIN = 22;
 bool relayState = false;
 
 // Sensor configuration
-const int SENSOR_PIN = 8;
+const int SENSOR_PIN = 23;
 
 // Pre-computed responses for maximum speed (no string operations)
 const char* RESP_RELAY_ON_OK = "RELAY_ON:OK";

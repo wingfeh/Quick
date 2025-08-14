@@ -6,24 +6,24 @@ from std_msgs.msg import String, Bool
 import socket
 import time
 
-class Mega1RelayNode(Node):
+class Mega4RelayNode(Node):
     def __init__(self):
-        super().__init__('m1relay_node')
+        super().__init__('m4relay_node')
         
         # Publishers
-        self.status_publisher = self.create_publisher(String, 'mega1/relay_status', 10)
-        self.state_publisher = self.create_publisher(Bool, 'mega1/relay_state', 10)
+        self.status_publisher = self.create_publisher(String, 'mega4/relay_status', 10)
+        self.state_publisher = self.create_publisher(Bool, 'mega4/relay_state', 10)
         
         # Subscriber for commands (matching GUI)
         self.command_subscription = self.create_subscription(
             String,
-            'mega1/relay_command',
+            'mega4/relay_command',
             self.command_callback,
             10
         )
         
         # Arduino connection settings
-        self.arduino_ip = '192.168.100.101'
+        self.arduino_ip = '192.168.100.104'
         self.arduino_port = 8888
         
         # UDP socket
@@ -37,7 +37,7 @@ class Mega1RelayNode(Node):
         # Timer for periodic status updates
         self.status_timer = self.create_timer(2.0, self.request_status)
         
-        self.get_logger().info('Mega1 Relay node started.')
+        self.get_logger().info('Mega4 Relay node started.')
     
     def send_udp_command(self, command):
         """Send UDP command to Arduino and return response"""
@@ -105,7 +105,7 @@ class Mega1RelayNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    relay_node = Mega1RelayNode()
+    relay_node = Mega4RelayNode()
     
     try:
         rclpy.spin(relay_node)

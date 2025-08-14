@@ -9,16 +9,16 @@ import time
 
 class M2SensorNode(Node):
     def __init__(self):
-        super().__init__('m2sensor')
+        super().__init__('m2sensor_node')
         
         # Publishers
-        self.sensor_state_publisher = self.create_publisher(Bool, '/mega2/sensor_state', 10)
-        self.sensor_response_publisher = self.create_publisher(String, '/mega2/sensor_response', 10)
+        self.sensor_state_publisher = self.create_publisher(Bool, 'mega2/sensor_state', 10)
+        self.sensor_response_publisher = self.create_publisher(String, 'mega2/sensor_response', 10)
         
         # Subscribers
         self.sensor_command_subscription = self.create_subscription(
             String,
-            '/mega2/sensor_command',
+            'mega2/sensor_command',
             self.sensor_command_callback,
             10
         )
@@ -26,7 +26,7 @@ class M2SensorNode(Node):
         # Arduino UDP configuration - MEGA2 uses different IP
         self.arduino_ip = '192.168.100.102'
         self.arduino_port = 8888
-        self.socket_timeout = 0.1
+        self.socket_timeout = 0.5  # Standardized timeout (was 0.1)
         
         # Initialize UDP socket
         self.setup_udp_socket()
@@ -34,10 +34,10 @@ class M2SensorNode(Node):
         # State tracking
         self.last_sensor_state = None
         
-        # Timer for periodic sensor reading (10Hz)
-        self.create_timer(0.1, self.read_sensor_timer_callback)
+        # Timer for periodic sensor reading (50Hz) - standardized with other megas
+        self.create_timer(0.02, self.read_sensor_timer_callback)
         
-        self.get_logger().info('M2 Sensor Node started - monitoring pin 8')
+        self.get_logger().info('Mega2 Sensor node started. Polling at 50Hz.')
         
     def setup_udp_socket(self):
         """Setup UDP socket for Arduino communication"""

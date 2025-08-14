@@ -12,12 +12,12 @@ class M2RelayController(Node):
     """
     
     def __init__(self):
-        super().__init__('m2relay')
+        super().__init__('m2relay_node')
         
         # Arduino connection parameters - MEGA2 uses different IP
         self.arduino_ip = '192.168.100.102'
         self.arduino_port = 8888
-        self.socket_timeout = 0.1  # Optimized timeout
+        self.socket_timeout = 0.5  # Standardized timeout
         
         # ROS2 Publishers and Subscribers
         self.command_subscription = self.create_subscription(

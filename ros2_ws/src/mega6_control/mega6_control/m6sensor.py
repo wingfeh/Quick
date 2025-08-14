@@ -6,24 +6,24 @@ from std_msgs.msg import String, Bool
 import socket
 import time
 
-class Mega1SensorNode(Node):
+class Mega6SensorNode(Node):
     def __init__(self):
-        super().__init__('m1sensor_node')
+        super().__init__('m6sensor_node')
         
         # Publishers (matching GUI expectations)
-        self.response_publisher = self.create_publisher(String, 'mega1/sensor_response', 10)
-        self.state_publisher = self.create_publisher(Bool, 'mega1/sensor_state', 10)
+        self.response_publisher = self.create_publisher(String, 'mega6/sensor_response', 10)
+        self.state_publisher = self.create_publisher(Bool, 'mega6/sensor_state', 10)
         
         # Subscriber for sensor commands
         self.command_subscription = self.create_subscription(
             String,
-            'mega1/sensor_command',
+            'mega6/sensor_command',
             self.command_callback,
             10
         )
         
         # Arduino connection settings
-        self.arduino_ip = '192.168.100.101'
+        self.arduino_ip = '192.168.100.106'
         self.arduino_port = 8888
         
         # UDP socket
@@ -37,7 +37,7 @@ class Mega1SensorNode(Node):
         # Timer for periodic sensor readings (high frequency)
         self.sensor_timer = self.create_timer(0.02, self.read_sensor)  # 50Hz
         
-        self.get_logger().info('Mega1 Sensor node started. Polling at 50Hz.')
+        self.get_logger().info('Mega6 Sensor node started. Polling at 50Hz.')
     
     def send_udp_command(self, command):
         """Send UDP command to Arduino and return response"""
@@ -95,7 +95,7 @@ class Mega1SensorNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    sensor_node = Mega1SensorNode()
+    sensor_node = Mega6SensorNode()
     
     try:
         rclpy.spin(sensor_node)

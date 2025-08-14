@@ -1,44 +1,34 @@
-#!/usr/bin/env python3
-
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String, Bool
 import socket
 import time
 
-class Mega1SensorNode(Node):
+class SensorNode(Node):
     def __init__(self):
-        super().__init__('m1sensor_node')
-        
-        # Publishers (matching GUI expectations)
-        self.response_publisher = self.create_publisher(String, 'mega1/sensor_response', 10)
-        self.state_publisher = self.create_publisher(Bool, 'mega1/sensor_state', 10)
+        super().__init__('m3sensor_node')
+        self.response_publisher = self.create_publisher(String, 'mega3/sensor_response', 10)
+        self.state_publisher = self.create_publisher(Bool, 'mega3/sensor_state', 10)
         
         # Subscriber for sensor commands
         self.command_subscription = self.create_subscription(
             String,
-            'mega1/sensor_command',
+            'mega3/sensor_command',
             self.command_callback,
             10
         )
-        
-        # Arduino connection settings
-        self.arduino_ip = '192.168.100.101'
-        self.arduino_port = 8888
-        
-        # UDP socket
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(0.5)
         
         # State tracking
         self.last_response = "Unknown"
         self.last_state = None
         
-        # Timer for periodic sensor readings (high frequency)
-        self.sensor_timer = self.create_timer(0.02, self.read_sensor)  # 50Hz
-        
-        self.get_logger().info('Mega1 Sensor node started. Polling at 50Hz.')
-    
+        self.arduino_ip = '192.168.100.103'
+        self.arduino_port = 8888
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.settimeout(0.5)  # Standardized timeout (was 0.1)
+        self.timer = self.create_timer(0.02, self.read_sensor) # 50Hz
+        self.get_logger().info('Mega3 Sensor node started. Polling at 50Hz.')
+
     def send_udp_command(self, command):
         """Send UDP command to Arduino and return response"""
         try:
@@ -53,7 +43,7 @@ class Mega1SensorNode(Node):
         except Exception as e:
             self.get_logger().error(f'Error sending command {command}: {e}')
             return None
-    
+
     def command_callback(self, msg):
         """Handle incoming sensor commands"""
         command = msg.data.upper()
@@ -63,7 +53,7 @@ class Mega1SensorNode(Node):
             self.read_sensor()
         else:
             self.get_logger().warning(f'Unknown sensor command: {command}')
-    
+
     def read_sensor(self):
         """Read sensor value from Arduino"""
         response = self.send_udp_command('SENSOR')
@@ -74,7 +64,7 @@ class Mega1SensorNode(Node):
                 self.publish_state(True)
             elif 'LOW' in response:
                 self.publish_state(False)
-    
+
     def publish_response(self, response_text):
         """Publish sensor response message"""
         if response_text != self.last_response:
@@ -95,15 +85,10 @@ class Mega1SensorNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    sensor_node = Mega1SensorNode()
-    
-    try:
-        rclpy.spin(sensor_node)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        sensor_node.destroy_node()
-        rclpy.shutdown()
+    sensor_node = SensorNode()
+    rclpy.spin(sensor_node)
+    sensor_node.destroy_node()
+    rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

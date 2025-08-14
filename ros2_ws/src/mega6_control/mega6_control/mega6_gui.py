@@ -3,15 +3,15 @@ from rclpy.node import Node
 from std_msgs.msg import Bool, String
 import tkinter as tk
 
-class Mega2GUI(Node):
+class Mega6GUI(Node):
     def __init__(self):
-        super().__init__('mega2_gui_node')
-        self.relay_publisher = self.create_publisher(String, 'mega2/relay_command', 10)
-        self.relay_status_subscriber = self.create_subscription(String, 'mega2/relay_status', self.update_relay_status, 10)
-        self.sensor_status_subscriber = self.create_subscription(String, 'mega2/sensor_response', self.update_sensor_status, 10)
+        super().__init__('mega6_gui_node')
+        self.relay_publisher = self.create_publisher(String, 'mega6/relay_command', 10)
+        self.relay_status_subscriber = self.create_subscription(String, 'mega6/relay_status', self.update_relay_status, 10)
+        self.sensor_status_subscriber = self.create_subscription(String, 'mega6/sensor_response', self.update_sensor_status, 10)
 
         self.root = tk.Tk()
-        self.root.title("Mega2 Control Panel")
+        self.root.title("Mega6 Control Panel")
         self.root.geometry("300x200")
 
         self.relay_status_label = tk.Label(self.root, text="Relay Status: Unknown", font=("Helvetica", 12))
@@ -55,7 +55,7 @@ class Mega2GUI(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    gui_node = Mega2GUI()
+    gui_node = Mega6GUI()
     gui_node.start()
 
 if __name__ == '__main__':
