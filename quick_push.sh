@@ -44,7 +44,7 @@ git commit -m "$1"
 
 # Push to GitHub using token authentication
 echo "Pushing to GitHub..."
-git push https://${GITHUB_TOKEN}@github.com/wingfeh/Quick7.git main
+git push https://${GITHUB_TOKEN}@github.com/wingfeh/Quick.git main
 
 if [ $? -eq 0 ]; then
     echo "✅ Successfully pushed to GitHub!"
